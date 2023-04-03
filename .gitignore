@@ -1,0 +1,7 @@
+*venv
+*tests
+*MANIFEST.in
+*README.md
+*pytest_cache
+*MUSQL/_pycache_
+*MUSQL/env
