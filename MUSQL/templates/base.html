@@ -1,0 +1,67 @@
+<!--
+This is the HTML file that is used as a template for the application layout. 
+It is used by all pages to ensure consistent design, and provide a navigation menu.
+
+The following is a breakdown of the structure and content of the file.
+
+The <head> element contains metadata, including character encoding and the title of the page. 
+It also links to external resources such as style sheets and font files.
+
+The <body> element contains the content of the page. 
+It uses the "loggedin" class to apply styles that are specific to pages that require authentication.
+
+The page has a container div with two children: 
+- The nav-menu div contains the navigation menu with links to home, profile, and logout pages.
+- The content div contains the content of the page, which is determined by the child templates.
+
+There is also a script tag that links to a JavaScript file that contains the button_animator function. 
+This script creates a dynamic button animation that is applied to all buttons on the page.
+-->
+
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"><![endif]-->
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css', _external=True) }}">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=MuseoModerno:wght@600&display=swap" rel="stylesheet">	
+	<link href="https://fonts.googleapis.com/css2?family=Kanit&display=swap" rel="stylesheet">
+</head>
+
+<body class="loggedin">
+    <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+        
+        <script src="" async defer></script>
+    <div class="app-container">
+        <nav class="nav-menu">
+            <img class="nav_logo" src="{{ url_for('static', filename='images/musql_logo.svg') }}" type="image/svg+xml" alt="MUSQL Logo">
+            {% if g.user %}
+            <a href="{{ url_for('musql.home') }}"><i class="fas fa-home"></i>Home</a>
+            <a href="{{ url_for('musql.profile') }}"><i class="fas fa-user-circle"></i>Profile</a>
+            <a href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt"></i>Logout</a>
+            {% endif %}
+        </nav>
+        <section class="content">
+            <header>
+            {% block header %}{% endblock %}
+            </header>
+            {% for message in get_flashed_messages() %}
+            <div class="flash">{{ message }}</div>
+            {% endfor %}
+            {% block content %}{% endblock %}
+        </section>
+    </div>
+</body>
+</html>

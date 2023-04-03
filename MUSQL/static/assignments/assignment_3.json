@@ -1,0 +1,152 @@
+{
+    "assignment_number":3,
+    "title": "CS621 Spatial Databases LAB EXAM 2b DEMO QUIZ",
+    "date": "10/12/23",
+    "notice":
+    [
+        "The MUSQL Quiz provides you",
+        " with <b>TWO ATTEMPTS</b> only. The overall duration of the quiz is 24 hours. This demo quiz has 7 questions. Lab Exam 2b will have",
+        " 8 questions.",
+        " Please familiarize yourself with the data",
+        " in the database table and <mark>read all questions carefully.</mark>"
+    ],
+    "context": 
+    [
+        "On Moodle will find an SQL file called <b>CS621-LabExam2b-Dar-es-Salaam-DEMO-TABLES.sql</b>",
+        " and this file should be executed in your PostgreSQL database schema. The data is taken from OpenStreetMap for the city of",
+        " Dar es Salaam in Tanzania. The SQL file contains DDL and DML statements for three tables: <b>L2BBuildings</b> (selected buildings),",
+        " <b>L2BPoints</b> (selected restaurants), and <b>L2BRoads</b> (selected roads). An image is shown below. All of the geometries are expressed",
+        " in <b>EPSG:4326</b>. For any calculation involving distance or area you are encouraged to use <mark>EPSG:32637 (UTM)</mark> as a suitable meter-based",
+        " projection. Further to this, you are also recommended to use the <b>< - ></b> operator for all distance calculations. Please carefully",
+        " check and take note of the primary keys and geometry column names for all of the three tables."
+    ],
+    "image":"images/assignment_3.png",
+    "max_attempts":2,
+    "duration":5400,
+    "questions": [
+        {
+            "question_number":1,
+            "question": 
+            [
+                "Write a query to return all pairs of buildings and roads where the",
+                " bounding rectangles of the objects intersect. You should ensure that the name",
+                " property of both objects is not null. Only select roads where the word 'Street' is",
+                " found at the end of the name value."
+            ],
+            "answer": 
+            [
+                "SELECT B.ogcfid, R.rdid, B.name, R.name",
+                " FROM L2BBuildings as B, L2BRoads as R",
+                " WHERE (B.bdgeom && R.rdgeom)",
+                " AND (B.name is not null)",
+                " AND (R.name is not null)",
+                " AND (R.name ~* '^.*Street$');"
+            ]
+        },
+        {
+            "question_number":2,
+            "question": 
+            [
+                "Write a query (or queries) which returns the primary key value of the",
+                " point object in the L2BPoints table which is FARTHEST away from the building",
+                " object in the L2BBuildings table having the largest overall area. Further to this the",
+                " building object name must not be null while the name attribute of the point",
+                " object must begin with an uppercase vowel character."
+            ],
+            "answer": 
+            [
+                "SELECT B.ogcfid,B.name,ST_Area(ST_Transform(bdgeom,32637)) as BArea,P.PTG, P.name,", 
+                " ST_Transform(b.bdgeom,32637) <->ST_Transform(p.ptgeom,32637) AS Dist",
+                " FROM L2BBuildings as B, L2BPoints as P",
+                " WHERE (B.name is not null) and  (P.name ~ '^(A|E|I|O|U).*$')",
+                " ORDER BY BArea DESC, Dist Desc;"
+            ]
+        },
+        {
+            "question_number":3,
+            "question": 
+            [
+                "With respect to the L2BPoints table. Considering only points where",
+                " the value in the name column has less than or equal to 10 characters write an",
+                " SQL query to find the number of pairs of points (restaurants) which are separated",
+                " by a distance equal to 100m or less."
+            ],
+            "answer": 
+            [
+                "SELECT p1.ptg, p1.name, p2.ptg, p2.name,",
+                " ST_Transform(P1.ptgeom,32637) <-> ST_Transform(P2.ptgeom,32637)",
+                " FROM L2BPoints as P1, L2BPoints as P2",
+                " WHERE (P1.ptg != P2.ptg) AND (p1.ptg > p2.ptg) and",
+                " ST_Transform(P1.ptgeom,32637) <-> ST_Transform(P2.ptgeom,32637) <= 100",
+                " and (char_length(p1.name) <= 10) and  (char_length(p2.name) <= 10);"
+            ]
+        },
+        {
+            "question_number":4,
+            "question": 
+            [
+                "Write and SQL query which returns all unique pairs of LINE objects in",
+                " the L2BRoads table where both line objects intersect each other and neither",
+                " object has a null name value."
+            ],
+            "answer": 
+            [
+                "SELECT r1.rdid,r1.name as R1Name,r2.rdid,r2.name as R2Name",
+                " FROM L2BRoads as R1, L2BRoads as R2",
+                " WHERE ST_Intersects(R1.rdgeom,R2.rdgeom) and (R1.rdid != R2.RDID) ",
+                " and (R1.rdid > R2.rdid)",
+                " and (r1.name is not null) and (r2.name is not null);"
+            ]
+        },
+        {
+            "question_number":5,
+            "question": 
+            [
+                "Within the L2BRoads table (allowing for the name column to have a",
+                " null and non-null values) how many unique pairs of lines/roads have bounding",
+                " rectangles which intersect when both lines are of type 'residential'."
+            ],
+            "answer": 
+            [
+                "SELECT r1.rdid, r1.name as R1Name, r2.rdid, r2.name as R2Name, r1.type as R1Type, r2.type as R2Type",
+                " FROM L2BRoads as R1, L2BRoads as R2",
+                " WHERE (R1.rdgeom && R2.rdgeom) and (R1.rdid != R2.rdid) and (r1.rdid < r2.rdid)",
+                " and (r1.type = 'residential')  and (r2.type = 'residential');"
+            ]
+        },
+        {
+            "question_number":6,
+            "question": 
+            [
+                "The point representing the entrance to the Embassy of Denmark",
+                " building is located at the POINT(532132 -752866) expressed in Well Known Text",
+                " in EPSG:32637. Write an SQL query to find the name of the 10th closest building to",
+                " this entrance point. You should not consider buildings where the name is null."
+            ],
+            "answer": 
+            [
+                "SELECT ogcfid, NAME, type, St_GeomFromText('POINT(532132 -752866)', 32637) <-> ST_Transform(bdgeom, 32637) as dist",
+                " FROM L2BBuildings", 
+                " where (name is not null) ORDER BY dist asc LIMIT 15;"
+            ]
+        },
+        {
+            "question_number":7,
+            "question": 
+            [
+                "Considering the L2BRoads and L2BBuildings tables. Write an SQL",
+                " query which returns all rows where the distance between the centroids of the",
+                " bounding rectangle of each road and building object is less than 200m. You must",
+                " use the operator for distance calculations. The building name must not be null."
+            ],
+            "answer": 
+            [
+                "SELECT r1.rdid, r1.name as R1Name, b1.ogcfid, b1.name, ST_Transform(ST_Centroid(ST_Envelope(R1.rdgeom)), 32637)",
+                " <-> ST_Transform(ST_Centroid(ST_Envelope(b1.bdgeom)), 32637) as thedistance",
+                " FROM L2BRoads as R1, L2BBuildings as b1",
+                " WHERE (ST_Transform(ST_Centroid(ST_Envelope(R1.rdgeom)), 32637) <-> ST_Transform(ST_Centroid(ST_Envelope(b1.bdgeom)), 32637)) < 200",
+                " and b1.name is not null order by thedistance desc;"
+            ]
+        }
+    ]
+}

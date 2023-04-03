@@ -1,0 +1,163 @@
+{
+    "assignment_number": 4,
+    "title": "CS621 Spatial Databases LAB EXAM 2B",
+    "date": "20/12/2023",
+    "notice": [
+        "The MUSQL Quiz provides you with <b>TWO ATTEMPTS</b> only. The overall duration of",
+        " the quiz is <b>70 minutes</b>. The MUSQL Quiz may ask you to provide specific",
+        " answers for the corresponding query. Please read each question carefully!"
+    ],
+    "context": [
+        "The file on Moodle called <b>“LabExam2b-Firenza-2022-INSERTS-TABLES.sql”</b> will be used to automatically create THREE tables called",
+        " LabExam2aTable which you will use to answer the questions below. This dataset",
+        " is taken from OpenStreetMap representing Florence (Firenza), in Tuscany, Italy.",
+        " The <b>labexam2bfbuildings</b> table, <b>labexam2bflines</b> table, and the",
+        " <b>labexam2bfpts</b> table (all points are restaurants) are created automatically for",
+        " you. <mark>The THREE tables have different coordinate reference systems</mark> and it is your",
+        " responsibility to compute this CRS. You should explore the names of the columns",
+        " in each of the tables particularly the primary key and geometry column for each",
+        " of the tables provided. You are advised to use <b>EPSG:7794</b> for ANY meter-based",
+        " calculations required in the questions below."
+    ],
+    "image": "images/assignment_4.png",
+    "max_attempts": 2,
+    "duration": 5400,
+    "questions": [
+        {
+            "question_number": 1,
+            "question": [
+                "In the LabExam2bFpts table, write a query which will return the",
+                " number of unique pairs of points in this table where both points represent",
+                " restaurants where the name begins with an uppercase letter L. The remaining",
+                " letters in the name are irrelevant in both cases."
+            ],
+            "answer": [
+                "select p1.ptid, p1.name, p2.ptid, p2.name",
+                " from LabExam2bfpts as P1, LabExam2bfpts as P2",
+                " where p1.ptid != p2.ptid and p1.ptid < p2.ptid",
+                " and p1.name ~* '^L.*$' and p2.name ~* '^L.*$';"
+            ]
+        },
+        {
+            "question_number": 2,
+            "question": [
+                "Write an SQL query (or several queries) to calculate the following:",
+                " What is the name of the restaurant in the LabExam2bFpts table which is",
+                " GEOGRAPHICALLY FARTHEST AWAY from the building with the largest area (in m2) in",
+                " the Labexam2bfbuildings table. The building name must be non null."
+            ],
+            "answer": [
+                "select ST_Area(l2bfbgeom) as TheArea, ogc_fid, name from labexam2bfbuildings",
+                " where name is not null",
+                " order by TheArea desc;"
+            ]
+        },
+        {
+            "question_number": 3,
+            "question": [
+                "Consider the centroids of all buildings in the Labexam2bfbuildings",
+                " table. Write an SQL query to compute the following. Considering only buildings",
+                " pairs where both names are not null and both names have less than 20",
+                " characters which pair of building centroids are geographically closest?"
+            ],
+            "answer": [
+                "select",
+                " b1.ogc_fid as b1pk,",
+                " b1.name,",
+                " b2.ogc_fid as b2pk,",
+                " b2.name,",
+                " st_centroid(B1.l2bfbgeom) <-> st_centroid(B2.l2bfbgeom) as centroiddistance",
+                " from",
+                " labexam2bfbuildings as B2,",
+                " labexam2bfbuildings as B1",
+                " where",
+                " (b1.ogc_fid != b2.ogc_fid)",
+                " and (b1.ogc_fid > b2.ogc_fid)",
+                " and (b1.name is not null)",
+                " and (b2.name is not null)",
+                " and (char_length(b1.name) < 20)",
+                " and (char_length(b2.name) < 20)",
+                " order by",
+                " centroiddistance;"
+            ]
+        },
+        {
+            "question_number": 4,
+            "question": [
+                "Consider the LabExam2bflines table. Write an SQL query to find the",
+                " number of unique pairs of lines in this table where BOTH lines have a NULL value",
+                " associated with their name value and the lines intersect each other."
+            ],
+            "answer": [
+                "select L1.fid as L1PK, L1.name, L2.fid as L2PK, L2.name",
+                " from labexam2bflines as L1, labexam2bflines as L2",
+                " where (L1.Fid != L2.fid) and (L1.fid > L2.fid)",
+                " and (l1. name is   null) and (l2.name is null)",
+                " and ST_INTERSECTS(l1.l2bflgeom,l2.l2bflgeom);"
+            ]
+        },
+        {
+            "question_number": 5,
+            "question": [
+                "Considering the labexam2bfbuildings and LabExam2bflines tables",
+                " and the intersection of the bounding rectangles of objects in both tables. Write an",
+                " SQL query to find the primary key of the object in the labexam2bfbuildings table",
+                " where its bounding rectangle intersects with the bounding rectangle of the 4th",
+                " longest line object (measured in meters, in the LabExam2bflines table )."
+            ],
+            "answer": [
+                "select L1.fid as L1PK, L1.name,ST_Length(ST_Transform(l1.l2bflgeom, 7794)) as LineLength,",
+                " b1.ogc_fid as b1pk,B1.name",
+                " from labexam2bflines as L1, labexam2bfbuildings as B1",
+                " where ST_Transform(l1.l2bflgeom, 7794) && B1.l2bfbgeom",
+                " order by linelength desc;"
+            ]
+        },
+        {
+            "question_number": 6,
+            "question": [
+                "Suppose you are given the location of a hotel in Florence with the",
+                " geolocation of POINT(11.250317 43.776917) expressed as WKT in EPSG:4326.",
+                " Write an SQL query which will find the ptid of the 10th closest point object in the",
+                " LabExam2bfpts table where the name is not null."
+            ],
+            "answer": [
+                "select p1.ptid, p1.name, ST_transform(P1.l2bfpgeom, 7794) <-> ST_Transform(St_GeomFromText('POINT(11.250317 43.776917)', 4326), 7794)",
+                " as distance from LabExam2bfpts as P1 where p1.name is not null",
+                " order by distance asc limit 10;"
+            ]
+        },
+        {
+            "question_number": 7,
+            "question": [
+                "Considering the Labexam2bflines only: Write an SQL query (or",
+                " queries) to compute the following. What is the distance in meters between the",
+                " longest line with a NULL name value and the longest line with a non NULL name",
+                " value?"
+            ],
+            "answer": [
+                "select L1.fid as L1PK, L1.name,ST_Length(ST_Transform(l1.l2bflgeom, 7794)) as LineLength",
+                " from labexam2bflines as L1 where NAME is null order by LINELENGTH;"
+            ]
+        },
+        {
+            "question_number": 8,
+            "question": [
+                "Considering the Labexam2bflines only. Recall the use of the",
+                " ST_Npoints function (you can look this up on the PostGIS documentation if you",
+                " need to). Write an SQL query which will return the number of unique pairs of lines",
+                " in this table where the fclass for both lines is not equal to footway and the",
+                " number of points used to represent each line (individually) is greater or equal to 6",
+                " points."
+            ],
+            "answer": [
+                "select l1.fid as L1PK,l1.fclass as L1F, St_npoints(l1.l2bflgeom) as L1Points,",
+                " L2.fid as L2PK, St_npoints(l2.l2bflgeom) as L2Points, l2.fclass  as L2F",
+                " from labexam2bflines as L1,labexam2bflines as L2",
+                " where (l1.fid != l2.fid) and (l2.fid > l1.fid)",
+                " and St_npoints(l1.l2bflgeom) >= 6 and St_npoints(l2.l2bflgeom) >= 6",
+                " and L1.FCLASS != 'footway' and l2.fclass != 'footway';"
+            ]
+        }
+    ]
+}

@@ -1,0 +1,6 @@
+include MUSQL/static
+graft MUSQL/templates
+graft MUSQL/models
+graft/utils
+graft/views
+global-exclude *.pyc

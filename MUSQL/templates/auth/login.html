@@ -1,0 +1,69 @@
+<!-- This is the HTML file for the login page -->
+<!-- It includes a login form with fields for username and password -->
+<!-- When submitted, the form sends a POST request to the Flask endpoint specified in the 'action' attribute -->
+<!-- The form also displays an error message if login fails -->
+<!-- The error message is shown in a modal dialog -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<title>Login</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
+	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+	<script src="https://www.w3schools.com/lib/w3.js"></script>
+</head>
+
+<body>
+
+	<div class="login">
+		<div class="login-container">
+			<img src="{{ url_for('static', filename='images/musql_logo.svg') }}" type="image/svg+xml">
+			<form id="login_form" action="{{ url_for('auth.login') }}" method="post">
+				<div class="form-stuff">
+					<label for="username">
+						<i class="fas fa-user"></i>
+					</label>
+					<input type="text" name="username" placeholder="Username" id="username" required>
+				</div>
+				<div class="form-stuff">
+					<label for="password">
+						<i class="fas fa-lock"></i>
+					</label>
+					<input type="password" name="password" placeholder="Password" id="password" required>
+				</div>
+
+				<div class="msg">{{ msg }}</div>
+				<input type="submit" value="Login">
+			</form>
+		</div>
+	</div>
+
+	{% for message in get_flashed_messages() %}
+	<div id="loginModal" class="w3-modal flash">
+		<div class="w3-modal-content w3-card-4">
+			<header class="w3-container w3-red">
+				<h2>Login Error</h2>
+			</header>
+			<div class="w3-container">
+				<p>{{ message }}</p>
+			</div>
+			<footer class="w3-container w3-center">
+				<button class="w3-button w3-red"
+					onclick="document.getElementById('loginModal').style.display='none'">Close</button>
+			</footer>
+		</div>
+	</div>
+	{% endfor %}
+	{% block content %}{% endblock %}
+	{% if error %}
+	<script>
+		w3.show('#loginModal')
+		document.getElementById("login_form").reset();
+	</script>
+	{% endif %}
+</body>
+
+</html>

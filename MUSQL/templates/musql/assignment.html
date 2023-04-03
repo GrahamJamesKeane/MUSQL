@@ -1,0 +1,110 @@
+<!--
+This is an HTML file that extends the layout file and creates a page for a specific assignment. 
+It includes a form with questions and answer fields for the user to submit. The file also handles 
+displaying the user's previously submitted answers and grades, if available. It includes a script 
+for validation and timing of the submission, as well as setting the URLs for the view assignment 
+page and home page.
+-->
+{% extends 'base.html' %}
+
+{% block title %}Assignment{% endblock %}
+
+{% block content %}
+{% set query_grades = None %}
+{% if grade %}
+<h1>Assignment {{ assignment_number }} - Total: {{ grade["total"] }}%</h1>
+{% else %}
+<h1>Assignment {{ assignment_number }}</h1>
+{% endif %}
+{% if not grade %}
+<div id="timer"></div>
+{% endif %}
+<form method="POST">
+  {% if assignment_data['image'] %}
+  <img src="{{ url_for('static', filename=assignment_data['image']) }}" alt="Assignment image" class="assignment_img"
+    width="460" height="345">
+  {% endif %}
+  {% for question in assignment_data['questions'] %}
+  {% if grade %}
+  {% set query_grades = grade['query_grades'][question['question_number'] - 1] %}
+  {% endif %}
+  <div class="question_card">
+    <div class="card-title card-common">
+      Question {{ question['question_number'] }}
+    </div>
+    <div class="card-notice card-common">
+      <p>{{ "".join(question['question']) }}</p>
+    </div>
+    {% if not access or query_grades != None %}
+    <div class="card-description card-common">
+      <b>Your Solution:</b>
+      {{ grade['query_grades'][question['question_number'] - 1]["query"] if grade is not none else ''}}
+    </div>
+    <div class="info-container card-common info_q">
+      <div class="info-item">
+        <span class="label">Syntax Score</span>
+        <span class="value">{{ query_grades['syntax'] }}%</span>
+      </div>
+      <div class="info-item">
+        <span class="label">Keyword Score</span>
+        <span class="value">{{ query_grades['keywords'] }}%</span>
+      </div>
+      <div class="info-item">
+        <span class="label">Results Score</span>
+        <span class="value">{{ query_grades['results'] }}%</span>
+      </div>
+      <div class="info-item">
+        <span class="label">Correct Order</span>
+        <span class="value">{{ "YES" if query_grades['order_score'] > 0 else "NO" }}</span>
+      </div>
+      <div class="info-item">
+        <span class="label">Content Score</span>
+        <span class="value">{{ query_grades['content_score'] }}%</span>
+      </div>
+      <div class="info-item">
+        <span class="label">Row Score</span>
+        <span class="value">{{ query_grades['row_by_row_score'] }}%</span>
+      </div>
+      <div class="info-item">
+        <span class="label">Column Score</span>
+        <span class="value">{{ query_grades['column_score'] }}%</span>
+      </div>
+      <div class="info-item">
+        <span class="label">Question Score</span>
+        <span class="value">{{ query_grades['query_total'] }}%</span>
+      </div>
+    </div>
+    {% else %}
+    <div class="card-description card-common">
+      <textarea name="answer_{{ question['question_number'] }}" rows="4" cols="50"></textarea>
+    </div>
+    {% endif %}
+  </div>
+
+  {% endfor %}
+  <input type="hidden" name="assignment_id" value="{{ assignment_number }}">
+  {% if start_timer and access %}
+  <div class="question_card">
+  <button id="assignment-form" type="submit" class="button-container">
+    <img src="{{ url_for('static', filename='images/submit.png') }}" alt="Button Image">
+  </button>
+</div>
+  {% endif %}
+</form>
+
+{% if start_timer and access %}
+<script src="{{ url_for('static', filename='javascript/validation.js') }}"></script>
+<script src="{{ url_for('static', filename='javascript/timing.js') }}"></script>
+<script>
+  var duration = {{ assignment_data['duration'] }};
+  var viewAssignmentUrl = '{{ url_for("musql.view_assignment", assignment_number=assignment_number) }}';
+  var homeUrl = '{{ url_for("musql.home") }}';
+</script>
+<script src="{{ url_for('static', filename='javascript/button_animator.js') }}"></script>
+<script>
+  var static_image = "{{ url_for('static', filename='images/submit.png') }}";
+  var gif = "{{ url_for('static', filename='images/submit.gif') }}";
+  button_animator(static_image, gif);
+</script>
+{% endif %}
+{% endblock %}

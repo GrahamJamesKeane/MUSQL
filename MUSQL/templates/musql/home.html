@@ -1,0 +1,90 @@
+<!--
+This is an HTML file that extends the base layout file and creates a page for the home screen. 
+It includes a welcome message for the user and displays a list of available assignments, 
+showing various information about each assignment such as attempts taken, max attempts, 
+attempts remaining, current grade, due date, and duration. The user can click on a button 
+to view an assignment in more detail. If there are no assignments available, it displays a 
+message saying there is no content to display. It also includes a script for refreshing 
+the page to prevent caching.
+-->
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<h2>Home Page</h2>
+<div class="user_welcome">Welcome Back, {{ user_id }}!</div>
+
+{% if assignments %}
+{% set i = 0 %}
+{% for assignment in assignments %}
+<div class="content-card">
+  <div class="card-title card-common">
+    {{ assignment['title'] }}
+  </div>
+  <div class="card-notice card-common">
+    <p>{{ "".join(assignment['notice']) | safe}}</p>
+  </div>
+  <div class="card-description card-common">
+    <p>{{ "".join(assignment['context']) | safe}}</p>
+  </div>
+  <div class="card-footer card-common">
+    <div class="card-info-wrapper">
+      <form action="{{ url_for('musql.view_assignment', assignment_number=assignment['assignment_number']) }}" method="get">
+        <input type="hidden" name="assignment_id" value="{{ assignment['assignment_number'] }}">
+        <button type="submit" class="button-container">
+          <img src="{{ url_for('static', filename='images/notebook.png') }}" alt="Button Image">
+        </button>
+
+      </form>
+      <div class="info-container info_a">
+        <div class="info-item info-item_a">
+          <span class="label">Attempts Taken</span>
+          <span class="value">{{ attempts[loop.index0] }}</span>
+        </div>
+        <div class="info-item info-item_a">
+          <span class="label">Max Attempts</span>
+          <span class="value">{{ assignment['max_attempts'] }}</span>
+        </div>
+        <div class="info-item info-item_a">
+          <span class="label">Attempts Remaining</span>
+          <span class="value">{{ assignment['max_attempts'] - attempts[loop.index0] }}</span>
+        </div>
+        <div class="info-item info-item_a">
+          <span class="label">Current Grade</span>
+          <span class="value">{{ grades[loop.index0] }}%</span>
+        </div>
+        <div class="info-item info-item_a">
+          <span class="label">Due Date</span>
+          <span class="value">{{ assignment['date'] }}</span>
+        </div>
+        <div class="info-item info-item_a">
+          <span class="label">Duration</span>
+          <span class="value">{{ assignment['duration'] / 60 }} min</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endfor %}
+{% else %}
+<p>No content to display.</p>
+{% endif %}
+{% if refresh %}
+<script>
+  window.onload = function () {
+    if (!window.location.hash) {
+      window.location = window.location + '#loaded';
+      window.location.reload();
+    }
+  }
+</script>
+{% endif %}
+<script src="{{ url_for('static', filename='javascript/button_animator.js') }}"></script>
+    <script>
+        var static_image = "{{ url_for('static', filename='images/notebook.png') }}";
+        var gif = "{{ url_for('static', filename='images/notebook.gif') }}";
+        button_animator(static_image, gif);
+    </script>
+{% endblock %}

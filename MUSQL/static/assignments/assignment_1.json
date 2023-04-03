@@ -1,0 +1,211 @@
+{
+    "assignment_number":1,
+    "title": "CS621 Spatial Databases LAB EXAM 1 - DEMO QUIZ",
+    "date": "01/10/2023",
+    "notice":
+    [
+        "The MUSQL Quiz provides you with <b>TWO ATTEMPTS</b> only. The overall duration of the DEMO quiz",
+        " is <b>24 hours</b>. You are strongly advised to make a note of your answers",
+        " in the event of a loss of data or other incident.",
+        " Please familiarize yourself with the data in the database table and read all questions carefully."
+    ],
+    "context": 
+    [
+        "The SQL file on Moodle called <b>CS621-LabExam1-2021-DEMO-TABLE-final.sql</b> contains the",
+        " DDL statements to create and populate a table for a dataset called",
+        " <b>CS621LabExam12022DEMO</b>. This dataset is geographically located in the urban area around",
+        " Boston, Massachusetts, USA. The dataset represents a fictious account of small value bitcoin",
+        " transactions made online from personal computers in this geographical area. The dataset",
+        " relates to transactions completed during October 2021 only. There are five columns of",
+        " interest to you:<ul>",
+        " <li><b>bitcoin</b> - the string representing the bitcoin</li>",
+        " <li><b>macaddress</b> - a unique identifier assigned to a network interface controller (NIC) or",
+        " network card on a personal computer. Contains digits and uppercase characters.</li>",
+        " <li><b>ttime</b> - a timestamp representing when the transaction was completed.</li>",
+        " <li><b>amount</b> - the amount, in US dollars, of the transaction.</li>",
+        " <li><b>bgeom</b> - the geographical location of the computer used in the transaction. This is",
+        " stored in <b>EPSG:4326</b>.</li></ul>",
+        " It is suggested that you use <b>EPSG:26986</b> (NAD83 / Massachusetts Mainland) for any",
+        " meter-based calculations required in the Lab Exam below."
+    ],
+    "max_attempts":2,
+    "duration":5400,
+    "questions": [
+        {
+            "question_number":1,
+            "question": 
+            [
+                "Write an SQL query to return all rows where the ttime timestamp value is between 4pm and",
+                " 5pm (but not equal to 5pm) for any date in the database table."
+                
+            ],
+            "answer": 
+            [
+                "select ttime from CS621LabExam12022DEMO where date_part('hour', ttime) = 16 order by ttime asc;"
+            ]
+        },
+        {
+            "question_number":2,
+            "question": 
+            [
+                "Write an SQL query which returns all rows where the macaddress begins with two prime digits",
+                " and ends with two prime digits."
+            ],
+            "answer": 
+            [
+                "SELECT macaddress from CS621LabExam12022DEMO where (macaddress ~ '^[2357]{2}.*[2357]{2}$');"
+            ]
+        },
+        {
+            "question_number":3,
+            "question": 
+            [
+                "Write an SQL query which returns all rows where the amount is even and the ttime value",
+                " represents a time of day equal to or after 2pm (regardless of the date)."
+            ],
+            "answer": 
+            [
+                "select ttime, amount from CS621LabExam12022DEMO where (amount % 2 =0) and (date_part('hour',ttime) >= 14);"
+            ]
+        },
+        {
+            "question_number":4,
+            "question": 
+            [
+                "Write an SQL query which returns all rows where the bitcoin representation contains 7 or",
+                " more consecutive upper-case characters (A-Z) followed by at least one digit."
+            ],
+            "answer": 
+            [
+                "select bitcoin from CS621LabExam12022DEMO where (bitcoin ~ '^.*[A-Z]{7,}\\d{1,}.*$');"
+            ]
+        },
+        {
+            "question_number":5,
+            "question": 
+            [
+                "Every <b>macaddress</b> has the same structure. Please review this structure in the database table",
+                " yourself. Write an SQL query which returns all rows where the macaddress contains 4 or more",
+                " consecutive blocks with the structure of an alphabetical character followed by a digit. For",
+                " example, this string <mark>'B7-A8-D5-C3-02-40'</mark>. Consecutive blocks can be anywhere in the",
+                " macaddress string."
+
+            ],
+            "answer": 
+            [
+                "select macaddress from CS621LabExam12022DEMO where macaddress ~ '^.*([A-Z][0-9]-{0,1}){4,}.*$';"
+            ]
+        },
+        {
+            "question_number":6,
+            "question": 
+            [
+                "The Subway restaurant within the M.I.T campus has a latitude of 42.359 and a longitude of",
+                " -71.094. How many bitcoin transactions are stored in the database table having locations",
+                " within 500 meters of this restaurant?"
+            ],
+            "answer": 
+            [
+                "SELECT *,ST_Distance(ST_Transform(bgeom, 26986),ST_Transform(St_GeomFromText('POINT(-71.094 42.359)', 4326), 26986))",
+                " as thedist From CS621LabExam12022DEMO WHERE (ST_Distance(ST_Transform(bgeom, 26986),ST_Transform(St_GeomFromText('POINT(-71.094 42.359)', 4326), 26986)) <= 500)",
+                " order by thedist asc;"
+            ]
+        },
+        {
+            "question_number":7,
+            "question": 
+            [
+                "The point expressed in Well Known Text (EPSG:4326) POINT(-71.110 42.352) represents the",
+                " geolocation of the center of the Boston University Bridge. How many bitcoin transactions are",
+                " stored in the database table with locations having a distance of greater or equal to 6KM from",
+                " this specified location?"
+            ],
+            "answer": 
+            [
+                "SELECT *,ST_Distance(ST_Transform(bgeom, 26986),ST_Transform(St_GeomFromText('POINT(-71.110 42.352)', 4326), 26986))",
+                " as thedist From CS621LabExam12022DEMO ",
+                " WHERE (ST_Distance(ST_Transform(bgeom, 26986),ST_Transform(St_GeomFromText('POINT(-71.110 42.352)', 4326), 26986)) >= 6000)",
+                " order by thedist asc;"
+            ]
+        },
+        {
+            "question_number":8,
+            "question": 
+            [
+                "Write an SQL query to return all transactions where the ttime column stores a timestamp",
+                " representing transactions which happened between 2:05pm on 18th October 2021 and",
+                " 2:05pm on 19th October 2021 (inclusive on both days and times)."
+            ],
+            "answer": 
+            [
+                "SELECT ttime from CS621LabExam12022DEMO",
+                " where (ttime >= '2021-10-18 14:05:00')",
+                " and (ttime <= '2021-10-19 14:05:00')",
+                " order by ttime desc;"
+            ]
+        },
+        {
+            "question_number":9,
+            "question": 
+            [
+                "Suppose you are given the following point expressed in Well Known Text (EPSG: 26986)",
+                " POINT(227490.089 898343.079) representing the Alumni Stadium in Boston College. Write",
+                " an SQL query which returns all rows where the transaction location is less than 3KM from this",
+                " geolocation and the amount of the transaction is less than $300."
+            ],
+            "answer": 
+            [
+                "SELECT *,ST_Distance(ST_Transform(bgeom, 26986),St_GeomFromText('POINT(227490.089 898343.079)', 26986))",
+                " as thedist From CS621LabExam12022DEMO",
+                " where (ST_Distance(ST_Transform(bgeom, 26986),St_GeomFromText('POINT(227490.089 898343.079)', 26986)) <= 3000)",
+                " and (amount < 300) order by thedist asc;"
+            ]
+        },
+        {
+            "question_number":10,
+            "question": 
+            [
+                "Consider the following bitcoin string '1939h42PCZHehRhYP5U7Sp21EJFXBDYfJE' - if we read",
+                " the first 3 digits only (ignoring any subsequent characters or digits in the bitcoin string) we",
+                " have a number which reads as 'one hundred and ninety three'. Write an SQL query which",
+                " returns all bitcoin in the table where the first three digits can be read as a number greater",
+                " or equal to 150."
+            ],
+            "answer": 
+            [
+                "select bitcoin from CS621LabExam12022DEMO where (bitcoin ~ '^1[5-9]\\d.*$')",
+                " or (bitcoin ~ '^[2-9]\\d\\d.*$') order by bitcoin;"
+            ]
+        },
+        {
+            "question_number":11,
+            "question": 
+            [
+                "Write an SQL query which finds all rows in the table where the amount is greater or equal to",
+                " $330 or the bitcoin string ends with 2 or more vowels (regardless of upper or lower case)."
+            ],
+            "answer": 
+            [
+                "SELECT bitcoin, amount from CS621LabExam12022DEMO where (bitcoin ~* '^.*(a|e|i|o|u){2,}$') or (amount >= 330);"
+            ]
+        },
+        {
+            "question_number":12,
+            "question": 
+            [
+                "Take the following macaddress as an example '94-84-5F-C5-C7-72' - notice that the first",
+                " two digits and last two digits can be interpreted as numbers greater or equal to 50.",
+                " Data analysts are being asked to check for transactions with a theme of''50'. Write an SQL",
+                " query which returns all rows where the macaddress strings display the pattern above and the",
+                " same rows also have a ttime timestamp where either the minute or second numerical value",
+                " is greater or equal to 50 (regardless of the date or hour)."
+            ],
+            "answer": 
+            [
+                "SELECT macaddress,ttime from CS621LabExam12022DEMO",
+                " where (macaddress ~ '^[5-9]\\d-.*-[5-9]\\d$') and ((date_part('minute',ttime) >= 50)",
+                " or (date_part('second',ttime) >= 50)) order by ttime;"
+            ]
+        }
+    ]
+}

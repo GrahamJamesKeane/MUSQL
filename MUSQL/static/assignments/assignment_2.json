@@ -1,0 +1,175 @@
+{
+    "assignment_number": 2,
+    "title": "CS621 Spatial Databases LAB EXAM 1",
+    "date": "10/11/23",
+    "notice":
+    [
+        "The Moodle Quiz provides you with <b>TWO ATTEMPTS</b> only. The overall duration of the DEMO quiz",
+        " is <mark>24 hours</mark> You are strongly advised to make a note of your answers ",
+        " as specified by the question) in the event of a loss of data or other incident.",
+        " Please familiarize yourself with the data in the database table",
+        " and read all questions carefully."
+    ],
+    "context": 
+    [
+        "The file on Moodle called <b>“LabExam12022-Table-SQL.sql”</b> will be used",
+        " to automatically create a table called <mark>LabExam12022</mark> which you will use to",
+        " answer the questions below. The table represents a fictional dataset of automated",
+        " highway speed control cameras in the Milan area of Northern Italy. The data",
+        " represents time periods in the year 2021 only. <ul>",
+        " <li>Column: <b>pkid</b> - the primary key</li>",
+        " <li>Column: <b>thegeom</b> - the geometry (POINT) in EPSG:4326 representing the",
+        " location where the speed camera detected the corresponding vehicle.</li>",
+        " <li>Column: <b>mph</b> - an integer representing the speed (in miles per hour)",
+        " detected for the vehicle passing the speed control camera.</li>",
+        " <li>Column: <b>trapTS</b> - a timestamp representing the date and time when the",
+        " speed camera detected the vehicle.</li>",
+        " <li>Column: <b>reg</b> - the registration plate of the vehicle. The registration strictly",
+        " follows the pattern - two upper case letters, 4 digits, two upper case letters.</li>",
+        " <li>Column: <b>vehicle</b> - the type of vehicle detected by the speed control camera.",
+        " Look at the contents of this column. Each vehicle is assigned a single type.</li></ul>",
+        " <b>Meter-based calculations:</b> You are asked to use <mark>EPSG:6875</mark> which is officially",
+    	" called RDN2008 / Italy zone (N-E). This SRS is meter-based for Northern Italy."
+    ],  
+    "max_attempts": 2,
+    "duration": 5400,
+    "questions": 
+    [
+        {
+            "question_number": 1,
+            "question": 
+            [
+                "Write an SQL query to return all rows where the vehicle is a car, the captured speed is between 100 and 140 mph",
+                " (both inclusive) and the speed camera observed this vehicle on ANY day in December."
+            ],
+            "answer": "select * from LabExam12022Table where (vehicle = 'car') and (mph >= 100 and mph <= 140) and date_part('month',trapTS) = 12;"
+        },
+        {
+            "question_number": 2,
+            "question": "Write a query returning rows where the day of any month is 7 or 14.",
+            "answer": "select * from labexam12022table where date_part('day',trapts) = 7 or date_part('day',trapts) = 14;"
+        },
+        {
+            "question_number": 3,
+            "question": 
+            [
+                "The Autostrada del Sole close to the town of Melegano in the south of Milano is a well known motorway junction.",
+                " The center point of this junction is given as WKT in EPSG:4326 as POINT(9.303231 45.355149). Write an SQL query which",
+                " returns ALL rows where the vehicle is a bus and the location is less than or equal to 10KM away from this point."
+            ],
+            "answer": 
+            [
+                "select *,st_distance(ST_Transform(thegeom, 6875), ST_TRANSFORM(St_GeomFromText('POINT(9.303231 45.355149)', 4326), 6875))",
+                " as thedistance from LabExam12022Table where ST_DWithin(ST_Transform(thegeom, 6875), ST_TRANSFORM(St_GeomFromText('POINT(9.303231 45.355149)', 4326), 6875), 10000)",
+                " and vehicle = 'bus';"
+            ]
+        },
+        {
+            "question_number": 4,
+            "question": 
+            [
+                "Suppose you are given the location in WKT in EPSG:4326 as POINT(9.262569 45.382383). Write an SQL query which finds the REGISTRATION PLATE",
+                " of the 'van' vehicle detected at the location closest to this point. The vehicle must be detected travelling at less than 90 mph."
+            ],
+            "answer": 
+            [
+                "select *,st_distance(ST_Transform(thegeom, 6875), ST_TRANSFORM(St_GeomFromText(' POINT(9.262569 45.382383)', 4326), 6875)) as thedistance from ",
+                " LabExam12022Table where (vehicle = 'van') and (mph < 90) order by thedistance asc;"
+
+            ]        
+        },
+        {
+            "question_number": 5,
+            "question": 
+            [
+                "Suppose you are given a point in WKT expressed in EPSG:3857 as follows POINT (1016235.07 5696786.90). Write an SQL query to return all rows where vehicles ",
+                "are travelling over 100mph within 2KM of this location."
+
+            ],
+            "answer": 
+            [
+                "select *,st_distance(ST_Transform(thegeom, 6875), ST_TRANSFORM(St_GeomFromText('POINT (1016235.07 5696786.90)', 3857), 6875)) as thedistance from",
+                " LabExam12022Table where ST_DWithin(ST_Transform(thegeom, 6875), ST_TRANSFORM(St_GeomFromText('POINT (1016235.07 5696786.90)', 3857), 6875), 2000) and mph > 100;"
+
+            ]        
+        },
+        {
+            "question_number": 6,
+            "question": "Write an SQL query to return all rows where the registration plate begin with two vowels and ends with two vowels. [Vowels are A, E, I, O and U]",
+            "answer": "select reg from labexam12022table where reg ~ '^[AEIOU]{2}\\d{4}[AEIOU]{2}$';"
+        },
+        {
+            "question_number": 7,
+            "question": 
+            [
+                "Considering 'truck' and 'motorcycle' (note the spelling) only, write an SQL query to return all rows where these vehicles have registration plates ",
+                " where the first and last characters are both one of the following alphabetical characters A, B, C, D, M, N, O, P. The other letters and digits in the",
+                " registration plate are not relevant."
+            ],            
+            "answer": "select reg, mph, vehicle from labexam12022table where reg ~ '^([A-D]|[M-P]).*([A-D]|[M-P])$' and (vehicle = 'truck' or vehicle = 'motorcyle') order by REG;"
+        },
+        {
+            "question_number": 8,
+            "question": 
+            [
+                "Write an SQL query to return all rows where the registration plate contains 3 or 4 adjacent digits where the adjacent digits are only 1, 2 and 3.",
+                " For example AH7312HA or PG3123HJ are registrations displaying this pattern. The registration BG3183KJ does not display this patten. You may have ",
+                " repeated digits."
+            ],            
+            "answer": "select reg, mph, vehicle from labexam12022table where reg ~ '^([A-Z]{2}).*[1-3]{3,4}.*([A-Z]{2})$' order by REG;"
+        },
+        {
+            "question_number": 9,
+            "question": "Write an SQL query that returns all rows where the trapts timestamp is between exactly midnight (inclusive) and before 01:30 for any day recorded.",
+            "answer": "select trapts from labexam12022table where (date_part('hour', trapts) = 1 and date_part('minute', trapts) < 30) or (date_part('hour', trapts) = 0);"
+        },
+        {
+            "question_number": 10,
+            "question": 
+            [
+                "Write an SQL query which returns all rows where the sum of the hour, minute and second value of trapts is greater or equal to the ",
+                "corresponding mph value. The query should only show vehicles where the type of vehicle is not listed as a car."
+
+            ],            
+            "answer": 
+            [
+                "select trapts, vehicle, mph, date_part('hour', trapts) + date_part('minute', trapts) + date_part('second', trapts) from labexam12022table",
+                " where (date_part('hour', trapts) + date_part('minute', trapts) + date_part('second', trapts) >= mph) and (vehicle != 'car');"
+
+            ]        
+        },
+        {
+            "question_number": 11,
+            "question": 
+            [
+                "Consider the reg column. The structure is described above. If one considers the four digits in the reg value as a numerical value by",
+                " reading the digits from left to right. For example JY9655YL. As a numerical value this equals 9,655. Write an SQL query which returns",
+                " all rows containing reg column values where the NUMERICAL VALUE of the FOUR DIGITS in the registration plate is greater or equal to 9,600."
+
+            ],            
+            "answer": "select reg from LabExam12022Table where reg ~ '^.*(9)[6789]\\d\\d.*$';"
+        },
+        {
+            "question_number": 12,
+            "question": 
+            [
+                "Refer to the description in Question 11. In this question you will use the very same definition. Write an SQL query which returns all",
+                " rows containing reg column values where the NUMERICAL VALUE of the FOUR DIGITS in the registration plate is less than 4,600."
+ 
+            ],           
+            "answer": "select reg,substring(reg from 3 for 4) as numeric1 from LabExam12022Table where (reg ~ '^[A-Z]{2}[0-3]\\d\\d\\d.*$') or (reg ~ '^[A-Z]{2}(4)(0|1|2|3|4|5)[0-9]{2}.*$');"
+        }
+    ],
+    "instructions": 
+    [
+        "The file on Moodle called “LabExam12022-Table-SQL.sql” will be used to automatically create a table called LabExam12022 which you will use to",
+        " answer the questions below. The table represents a fictional dataset of automated highway speed control cameras in the Milan area of Northern Italy. ",
+        " The data represents time periods in the year 2021 only. • Column: pkid - the primary key• Column: thegeom - the geometry (POINT) in EPSG: 4326 ",
+        " representing the location where the speed camera detected the corresponding vehicle. • Column: mph - an integer representing the speed ",
+        " (in miles per hour) detected for the vehicle passing the speed control camera. • Column: trapTS - a timestamp representing the date and time when",
+        " the speed camera detected the vehicle. • Column: reg - the registration plate of the vehicle. The registration strictly follows the pattern -",
+        " two upper case letters,4 digits, two upper case letters. • Column: vehicle - the type of vehicle detected by the speed control camera. Look at ",
+        " the contents of this column. Each vehicle is assigned a single type. Meter-based calculations: You are asked to use EPSG: 6875 which is officially",
+        " called RDN2008 / Italy zone (N-E). This SRS is meter-based for Northern Italy."
+    ]
+}

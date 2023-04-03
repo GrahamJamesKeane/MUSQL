@@ -1,0 +1,445 @@
+:root {
+    --border_radius: 30px;
+    --border: 8px solid #ddd;
+}
+
+* {
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "segoe ui", roboto, oxygen, ubuntu, cantarell, "fira sans", "droid sans", "helvetica neue", Arial, sans-serif;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    background-color: #435165;
+    margin: 0;
+}
+
+body.loggedin {
+    background-color: #f3f4f7;
+}
+
+svg {
+    height: 400px;
+    width: 200px;
+    z-index: 200;
+}
+
+.login {
+    width: 100%;
+    max-width: 400px;
+    /* Set the maximum width for the container */
+    border-radius: var(--border_radius);
+    background-color: #ffffff;
+    box-shadow: 0 0 9px rgba(0, 0, 0, 0.3);
+    margin: 100px auto;
+    padding: 20px;
+    /* Add some padding inside the container */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.login img {
+    display: block;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.login h1 {
+    text-align: center;
+    color: #5b6574;
+    font-size: 24px;
+    padding: 20px 0;
+    border-bottom: 1px solid #dee0e4;
+}
+
+.login .links {
+    display: flex;
+    padding: 0 15px;
+}
+
+.login .links a{
+    color: #adb2ba;
+    text-decoration: none;
+    display: inline-flex;
+    padding: 0 10px 10px;
+    font-weight: bold;
+}
+
+.login .links a:hover {
+    color: #9da3ac;
+}
+
+.login .links a.active{
+    border-bottom: 3px solid #3274d6;
+    color: #3274d6;
+}
+
+.login form {
+    display: grid;
+    justify-content: center;
+    padding-top: 20px;
+}
+
+.login form label {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+    height: 50px;
+    background-color: #3274d6;
+    color: #ffffff;
+    border-radius: var(--border_radius) 0 0 var(--border_radius);
+}
+
+.login-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 400px;
+    /* Set the maximum width for the container */
+    margin: 0 auto;
+
+}
+
+.login img {
+    width: 100%;
+    /* Set the width to be 100% of the container */
+    margin-bottom: 20px;
+    /* Add some margin at the bottom */
+}
+
+.login form {
+    width: 100%;
+    /* Set the width to be 100% of the container */
+}
+
+.form-stuff {
+    display: flex;
+}
+
+.login form input[type="password"],
+.login form input[type="text"],
+.login form input[type="email"] {
+    width: 310px;
+    height: 50px;
+    border: 1px solid #dee0e4;
+    margin-bottom: 20px;
+    padding: 0 15px;
+    border-radius: 0 var(--border_radius) var(--border_radius) 0;
+}
+
+.login form input[type="submit"] {
+    width: 100%;
+    padding: 15px;
+    background-color: #3274d6;
+    border: 0;
+    cursor: pointer;
+    font-weight: bold;
+    color: #ffffff;
+    transition: background-color 0.2s;
+    margin-bottom: 10px;
+    border-radius: var(--border_radius);
+}
+
+.login form input[type="submit"]:hover {
+    background-color: #2868c7;
+}
+
+.content {
+    width: 1000px;
+    margin: 0 auto;
+    flex: 1;
+    padding: 1rem;
+}
+
+.content h2 {
+    margin: 0;
+    padding: 2% 40%;
+    font-size: 35px;
+    border-bottom: 1px solid #e0e0e3;
+    color: #4a536e;
+    font-weight: bolder;
+    text-align: center;
+}
+
+.content>p,
+.content>div {
+    box-shadow: 10px 5px 5px black;
+    margin: 25px 0;
+    padding: 25px;
+    background-color: #fff;
+    border-radius: var(--border_radius);
+    border: solid black;
+}
+
+.content>p table td,
+.content>div table td {
+    padding: 5px;
+}
+
+.content>p table td:first-child,
+.content>div table td:first-child {
+    font-weight: bold;
+    color: #4a536e;
+    padding-right: 15px;
+}
+
+.content>div p {
+    padding: 5px;
+    margin: 0 0 10px 0;
+}
+
+.user_welcome {
+    font-weight: bold;
+    font-size: 40px;
+    text-align: center;
+}
+
+.container {
+    display: flex;
+    align-items: center;
+}
+
+.button-container {
+    width: 120px;
+    height: 120px;
+    margin-right: 20px;
+    background-color: white;
+    border: 5px solid black;
+    border-radius: 10%;
+    cursor: pointer;
+    padding: 0;
+    position: relative;
+    transition: transform 0.3s ease-in-out;
+}
+
+.button-container:focus-within {
+    transform: scale(1.05);
+}
+
+.button-container img {
+    display: block;
+    width: 80%;
+    height: 80%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.button-container img.gif {
+    animation: play-animation 1s linear infinite;
+    border-radius: 10%;
+}
+
+.info-container {
+    height: 100px;
+
+    display: grid;
+    gap: 10px;
+    border: 10px solid #ccc;
+    border-radius: var(--border_radius);
+}
+
+.info_a {
+    width: 80%;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+}
+
+.info_q {
+    width: 100%;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 80%;
+}
+
+.info-item_a {
+    transform: translateY(10px);
+}
+.info-item:hover .label,
+.value {
+    display: none;
+}
+
+.info-item:hover .value {
+    display: block;
+}
+
+.info-item:hover .label {
+    display: none;
+}
+
+.label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+    transition: display 0.5s ease;
+}
+
+.card-common {
+    grid-column: 1/span 2;
+    background-color: #f5f5f5;
+    border: var(--border);
+    border-radius: var(--border_radius);
+    padding: 10px;
+    align-items: center;
+}
+
+.content-card {
+    background-color: #fff;
+    border-radius: var(--border_radius);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    display: grid;
+    grid-template-rows: fit-content(10%);
+    grid-template-columns: 1fr 3fr;
+    grid-gap: 20px;
+}
+
+.card-title {
+    grid-row: 1;
+    font-size: 30px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.content-card .card-title h4 {
+    text-align: center;
+}
+
+.card-notice {
+    grid-row: 2;
+    font-size: 16px;
+    overflow-wrap: break-word;
+    text-align: justify;
+}
+
+.card-description {
+    grid-row: 3;
+    font-size: 16px;
+    overflow-wrap: break-word;
+    display: inline-block;
+    height: auto;
+    text-align: justify;
+}
+
+.card-footer {
+    grid-row: 4;
+    justify-content: center;
+    height: 100%;
+}
+
+.card-info-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.assignment_img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 10px;
+}
+
+.question_card {
+    background-color: #fff;
+    border-radius: var(--border_radius);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    display: grid;
+    grid-template-rows: fit-content(10%);
+    grid-template-columns: 2fr 2fr;
+    grid-gap: 20px;
+    margin-bottom: 10px;
+}
+
+.card-description textarea {
+    width: 100%;
+    /* Make the textarea take the full width of its container */
+    height: 100%;
+    /* Make the textarea take the full height of its container */
+    resize: none;
+    /* Disable the ability to resize the textarea */
+    overflow-y: scroll;
+    /* Make the textarea vertically scrollable */
+    border-radius: 30px 0 0 30px;
+    /* Set the border radius of the textarea */
+    padding: 15px 15px;
+}
+
+#assignment-form {
+    transform: translateX(550%);
+}
+
+.login form input[type="submit"]
+#assignment-form {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+body.loggedin {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+.app-container {
+    display: flex;
+    flex: 1;
+}
+
+.nav-menu {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 20%;
+    background-color: rgb(51, 0, 255);
+    padding: 1rem;
+    box-sizing: border-box;
+    border-right: inset black;
+}
+
+.nav_logo {
+    width: 80%;
+    height: auto;
+    margin-bottom: 1.5rem;
+}
+
+.nav-menu a {
+    font-size: 25px; /* Increase the font size */
+    display: flex; /* Display nav icon and text as flex items */
+    align-items: center; /* Align nav icon and text vertically */
+    gap: 20%; /* Add space between nav icon and text */
+    padding: 10px 125px; /* Add padding around nav link for a larger clickable area */
+    transition: background-color 0.2s; /* Add transition effect for background-color on hover */
+    color: white;
+    text-decoration: none;
+    margin: 10px 10px 10px 10px;
+}
+
+.nav-menu i {
+    font-size: 40px;
+}
+
+/* Add this new CSS rule for nav link hover effect */
+.nav-menu a:hover {
+    /* background-color: #2868c7; */ /* Change the background-color on hover */
+    color: #000000;
+    text-shadow: rgb(255, 0, 0) 1px 0 10px;
+}

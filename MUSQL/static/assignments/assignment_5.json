@@ -1,0 +1,87 @@
+{
+    "assignment_number": 5,
+    "title": "Window Query Demo",
+    "date": "20/12/2024",
+    "notice": [
+        "Notice goes here"
+    ],
+    "context": [
+        "In the SQL file window-queries.sql you are presented with a simple table of population data", 
+        " for a selection of cities around the world. Please examine the table carefully as the contents",
+        " are self explanatory. You are required to answer the following questions using PostgreSQL Window",
+        " Queries. Please note that it may be possible to write traditional non-window queries to satisfy",
+        " these questions. However, for the purpose of this exam only Window Queries will be allowed (as shown",
+        " in lectures)."
+    ],
+    "max_attempts": 2,
+    "duration": 5400,
+    "questions": [
+        {
+            "question_number": 1,
+            "question": [
+                "Write an SQL window query which returns a result set organised in the following way.",
+                " The continent is partitioned in ascending order with each city in that partition ranked",
+                " by population (highest = rank order 1)."
+            ],
+            "answer": [
+                "select City, pop, continent,",
+                " rank() over",
+                " (partition by continent order by pop desc) as CityRank",
+                " from WindowCities;"
+            ]
+        },
+        {
+            "question_number": 2,
+            "question": [
+                "Using the same question as in the previous question - write an SQL query which restricts",
+                " the results to only those cities which have a rank of less than or equal to 2."
+            ],
+            "answer": [
+                "select City, pop, continent,",
+                " rank() over",
+                " (partition by continent order by pop asc) as CityRank",
+                " from WindowCities;"
+            ]
+        },
+        {
+            "question_number": 3,
+            "question": [
+                "Write an SQL window query to return the city with the highest population within each continent."
+            ],
+            "answer": [
+                "select City, pop, continent,",
+                " rank() over",
+                " (partition by continent order by city, pop desc) as CityRank",
+                " from WindowCities;"
+            ]
+        },
+        {
+            "question_number": 4,
+            "question": [
+                "In a similiar way, write an SQL window query to return the cities with the lowest population within each continent."
+            ],
+            "answer": [
+                "select City, pop, continent,",
+                " rank() over",
+                " (partition by city order by pop desc) as CityRank",
+                " from WindowCities;"
+            ]
+        },
+        {
+            "question_number": 5,
+            "question": [
+                "Considering ONLY the first character in the string respresenting each city",
+                " (ignore the continent) write an SQL window query which returns the city with",
+                " the highest population for each available first character in the city string."
+            ],
+            "answer": [
+                "select * from",
+                " (select City, pop, continent,",
+                " rank() over",
+                " (partition by continent order by pop desc) as CityRank",
+                " from WindowCities) as MyQuery",
+                " where CityRank <= 2;"
+            ]
+        }
+    ]
+}
