@@ -2,7 +2,7 @@ import json
 from MUSQL.models import Result, Assignment
 from sqlalchemy import text
 from flask import request, session
-from MUSQL.utils.grading_engine import evaluate_submission
+from MUSQL.core.grading_engine import evaluate_submission
 
 
 def join_builder(col, table_1, table_2, table_3, col_a, col_b, col_c, s_id):

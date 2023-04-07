@@ -1,4 +1,4 @@
-from MUSQL.utils.database import db
+from .database import db
 
 class Assignment(db.Model):
     __tablename__ = 'assignments'

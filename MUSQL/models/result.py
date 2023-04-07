@@ -1,4 +1,4 @@
-from MUSQL.utils.database import db
+from .database import db
 
 class Result(db.Model):
     __tablename__ = 'results'

@@ -1,7 +1,12 @@
 *venv
-*tests
+*MUSQL_EVAL/tests
 *MANIFEST.in
 *README.md
 *pytest_cache
-*MUSQL/_pycache_
-*MUSQL/env
+*MUSQL_EVAL/MUSQL/_pycache_
+*MUSQL_EVAL/MUSQL/env
+*MUSQL_EVAL/MUSQL/core/_pycache_
+*MUSQL_EVAL/MUSQL/flask/_pycache_
+*MUSQL_EVAL/MUSQL/models/_pycache_
+*MUSQL_EVAL/MUSQL/utils/_pycache_
+*MUSQL_EVAL/MUSQL/views/_pycache_

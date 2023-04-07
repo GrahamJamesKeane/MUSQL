@@ -1,5 +1,5 @@
 from werkzeug.security import generate_password_hash, check_password_hash
-from MUSQL.utils.database import db
+from .database import db
 
 class Account(db.Model):
     __tablename__ = 'accounts'
